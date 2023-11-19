@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercício 1-Países</title>
+</head>
+<body>
+    <b><h1>Escolha o País que Desejar:</h1></b>
+
+
+   <select id = "sel_paises" class="form-select" aria-label="Default select example">
+    <option selected>Selecione o País</option>
+</select>
+
+
+    <div id = "dados_paises">
+        <h3>Informações do País que Você Selecionou</h3>
+        <p>Nome do País Selecionado: <span id="Pnome"></span></p>
+        <p>Gentílico do País Selecionado:  <span id="Pgent"></span></p>
+        <p>Sigla do País Selecionado: <span id="Psig"></span></p>
+        <p>Nome Internacional do País Selecionado: <span id="Pnomeint"></span></p>
+    </div>
+
+   
+<style>
+
+#sel_paises{
+    width: 30%;
+    height: 25px;
+    border-radius: 3px;
+}
+
+</style> 
+
+
+
+<script>
+
+    const url="./paises.json"; //Insere o arquivo json para utilização
+
+    //Esta função serve para garantir que a execução do javascript só comece após os dados estiverem carregados
+    document.addEventListener("DOMContentLoaded", function(){ 
+
+        const sel_paises = document.getElementById("sel_paises");
+        const Pnome = document.getElementById("Pnome");
+        const Pgent = document.getElementById("Pgent");
+        const Psig = document.getElementById("Psig");
+        const Pnomeint = document.getElementById("Pnomeint");
+        const dados_paises = document.getElementById("dados_paises");
+
+    //Esse fetch serve para aplicar o json e garantir que eu possa ter uma respostas com seus dados
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(paises => {   //Este forEach serve para percorrer dados do json e aplicar eles nas options do select
+                const option = document.createElement("option");
+                option.value = paises.nome_pais;
+                option.textContent = paises.nome_pais;
+                sel_paises.appendChild(option);
+            });
+
+        sel_paises.addEventListener("change",  function() {
+            const pais_selec = data.find(paises => paises.nome_pais === sel_paises.value);
+            //Serve para checar se o pais selecionado é o mesmo pertencente ao json
+        if(pais_selec){//Caso seja o mesmo pais ele aplica os dados pedidos
+
+            Pnome.textContent = pais_selec.nome_pais;
+            Pgent.textContent = pais_selec.gentilico;
+            Psig.textContent = pais_selec.sigla;
+            Pnomeint.textContent = pais_selec.nome_pais_int;
+
+            dados_paises.style.display = "block";
+        }
+
+        else{//Caso não seja ele não emitirá os dados
+            dados_paises.style.display = "none";
+
+        }
+
+        });
+    });
+});
+
+
+</script>
+
+</body>
+</html>
