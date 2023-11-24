@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Exercício 2</title>
+</head>
+<body>
+
+    <div id="blocobutton">
+
+        <button type="button" onclick="consultarFeriados()">Consultar os Feriados de 2012</button>
+        <button type="button" onclick="consultarTaxas()">Consultar as Taxas Oficiais do Brasil</button>
+        <button type="button" onclick="consultarEstados()">Consultar todos os Estados do Brasil</button>
+    </div>
+    <br><br>
+
+    <div id="feResult" class="resultado"></div>
+    <div id="taResult" class="resultado"></div>
+    <div id="estResult" class="resultado"></div>
+
+
+    <br><br>
+
+    <div class="blocoforms">
+        <form id="formddd" class="input-box">
+            <label for="Inputddd">Digite o DDD:</label>
+            <input type="text" id="Inputddd" required>
+            <button type="button" onclick="consultarDDD()">Consultar o DDD</button>
+        </form><br>
+
+    <div id="resultadoddd" class="resultado"></div>
+    
+    <br>
+
+        <form id="formcep" class="input-box">
+            <label for="Inputcep">Digite o CEP:</label>
+            <input type="text" id="Inputcep" required>
+            <button type="button" onclick="consultarCEP()">Consultar o CEP</button>
+        </form><br>
+
+    <div id="resultadocep" class="resultado"></div>
+
+    <br>
+
+        <form id="formcnpj" class="input-box">
+            <label for="Inputcnpj">Digite o CNPJ:</label>
+            <input type="text" id="Inputcnpj" required>
+            <button type="button" onclick="consultarCNPJ()">Consultar o CNPJ</button>
+        </form><br>
+
+    <div id="resultadocnpj" class="resultado"></div>
+
+    </div>
+
+<style>
+
+body{
+    background-color: rgba(131, 141, 151, 0.61);
+    font-family: Georgia, 'Times New Roman', Times, serif;  
+}
+
+.resultado{
+    font-size: 20px;
+    color: rgb(92, 0, 179);
+}
+
+.blocoforms{
+    border: 2px solid rgb(92, 0, 179);
+    border-radius: 5px;
+    padding: 15px;
+}
+
+button {
+    background-color: rgb(92, 0, 179);
+    color: white;
+    border: rgb(92, 0, 179);
+    border-radius: 8px;
+    padding: 10px 10px;
+    margin: 10px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+button:hover {
+    background-color: rgb(145, 31, 252)
+}
+
+.input-box input {
+    margin-right: 5px;
+    border: 1px solid rgb(145, 31, 252);
+    border-radius: 5px;
+    padding: 8px;
+}
+
+label{
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    color: rgb(92, 0, 179);
+    font-size: 18px;
+    padding-right: 5px;
+}
+
+
+</style>
+
+
+
+<script>
+
+//Function para resgatar os feriados
+async function consultarFeriados() {
+    //Serve para esvaziar as outras funções para que não haja problemas
+    document.getElementById('taResult').innerHTML = '';
+    document.getElementById('estResult').innerHTML = '';
+
+    //Definindo o ano para resgatar na API
+    const ano = 2012;
+    const API_KEY = 'SUA_CHAVE_DE_API';
+    const url = `https://brasilapi.com.br/api/feriados/v1/${ano}?key=${API_KEY}`;
+
+    try {
+        //Chama a função com os dados da API
+        const data = await fetchData(url);
+
+        // Serve para verificar e mapear os feriados e inserir os dados para mostrar
+        if (data.length > 0) {
+            const dadosferiados = data.map(feriado => `<p>${feriado.name}: ${feriado.date}</p>`).join('');
+            document.getElementById('feResult').innerHTML = dadosferiados;
+        } else {
+            document.getElementById('feResult').innerHTML = `<p>Nenhum feriado foi encontrado no ano de ${ano}.</p>`;
+        }
+    } catch (error) {
+        console.error('Erro ao consultar os feriados requisitados:', error);
+        document.getElementById('feResult').innerHTML = '<p>Erro ao consultar os feriados requisitados.</p>';
+
+    }
+}
+
+
+//Function para resgatar as taxas
+async function consultarTaxas() {
+    //Serve para esvaziar as outras funções para que não haja problemas
+    document.getElementById('feResult').innerHTML = '';
+    document.getElementById('estResult').innerHTML = '';
+
+    //Definindo o ano para resgatar na API
+    const API_KEY = 'SUA_CHAVE_DE_API';
+    const url = `https://brasilapi.com.br/api/taxas/v1?key=${API_KEY}`;
+
+    try {
+        //Chama a função com os dados da API
+        const data = await fetchData(url);
+
+        // Serve para verificar e mapear as taxas e inserir os dados para mostrar
+        if (data.length > 0) {
+            const dadostaxas = data.map(taxa => `<p>Taxa: ${taxa.nome} // Valor: ${taxa.valor}</p>`).join('');
+            document.getElementById('taResult').innerHTML = dadostaxas;
+        } else {
+            document.getElementById('taResult').innerHTML = `<p>Nenhuma taxa foi encontrada.</p>`;
+        }
+    } catch (error) {
+        console.error('Erro ao consultar as taxas requisitadas:', error);
+        document.getElementById('taResult').innerHTML = '<p>Erro ao consultar as taxas requisitadas!</p>';
+
+    }
+}
+
+
+//Function para resgatar as taxas
+async function consultarEstados() {
+    //Serve para esvaziar as outras funções para que não haja problemas
+    document.getElementById('feResult').innerHTML = '';
+    document.getElementById('taResult').innerHTML = '';
+
+    //Definindo o ano para resgatar na API
+    const API_KEY = 'SUA_CHAVE_DE_API';
+    const url = `https://brasilapi.com.br/api/ibge/uf/v1?key=${API_KEY}`;
+
+    try {
+        //Chama a função com os dados da API
+        const data = await fetchData(url);
+
+        // Serve para verificar e mapear as taxas e inserir os dados para mostrar
+        if (data.length > 0) {
+            const dadosestado = data.map(estado => `<p>Estado: ${estado.nome}  // Sigla: ${estado.sigla}</p>`).join('');
+            document.getElementById('estResult').innerHTML = dadosestado;
+        } else {
+            document.getElementById('estResult').innerHTML = `<p>Nenhum estado foi encontrado.</p>`;
+        }
+    } catch (error) {
+        console.error('Erro ao consultar os estados do Brasil:', error);
+        document.getElementById('taResult').innerHTML = '<p>Erro ao consultar os estados do Brasil!</p>';
+
+    }
+}
+
+//Essa API_KEY serve para resetar a API para não gerar problemas
+const API_KEY = 'SUA_CHAVE_DE_API';
+
+//Funçao inteira para coletar os dados e transferir para JSON e verificar se existe erros
+async function fetchData(url) {
+    try {
+        const response = await fetch(url);//Coleta a url dos dados que quero utilizar
+        const data = await response.json();//Isso converte a resposta coletada em JSON
+
+        // Retorna os dados obtidos
+        return data;
+
+    } catch (error) {
+        console.error('Ocorreu um erro:', error);// Caso ocorra um erro ele vai informar o usuário no console
+        throw error;
+    }
+}
+
+//Function para onsultar os dados pegos na API e aplicá-los
+async function consultarDDD() {
+    // Serve para obter o valor inserido no input do DDD
+    const Inputddd = document.getElementById('Inputddd').value;
+    const url = `https://brasilapi.com.br/api/ddd/v1/${Inputddd}?key=${API_KEY}`;
+
+    try {
+        //Coleta os dados da API do DDD
+        const data = await fetchData(url);
+
+        //Com isso o UF(SIGLA) do estado do DDD vai ser exibido
+        document.getElementById('resultadoddd').innerHTML = `<p>Estado do DDD inserido: ${data.state}</p>`;
+    } catch (error) {
+        //Caso ocorra um erro isso que será exibido
+        document.getElementById('resultadoddd').innerHTML = '<p>Erro ao consultar o DDD inserido!</p>';
+    }
+}
+
+//Function para onsultar os dados pegos na API e aplicá-los
+async function consultarCEP() {
+    // Serve para obter o valor inserido no input do CEP
+    const Inputcep = document.getElementById('Inputcep').value;
+    const url = `https://brasilapi.com.br/api/cep/v1/${Inputcep}?key=${API_KEY}`;
+
+    try {
+        //Coleta os dados da API do CEP
+        const data = await fetchData(url);
+
+        //Com isso ele vais mostrar as informações apartir do CEP inserido
+        document.getElementById('resultadocep').innerHTML = `<p>CEP Inserido: ${data.cep}</p> <p>Estado do CEP Inserido: ${data.state}</p> <p>Cidade do CEP Inserido: ${data.city}</p> <p>Bairro do CEP Inserido: ${data.neighborhood}</p> <p>Rua do CEP Inserido: ${data.street}</p> `;
+    } catch (error) {
+        //Caso ocorra um erro isso que será exibido
+        document.getElementById('resultadocep').innerHTML = '<p>Erro ao consultar o CEP inserido!</p>';
+    }
+}
+
+
+///Function para onsultar os dados pegos na API e aplicá-los
+async function consultarCNPJ() {
+    // Serve para obter o valor inserido no input do CNPJ
+    const Inputcnpj = document.getElementById('Inputcnpj').value;
+    const url = `https://brasilapi.com.br/api/cnpj/v1/${Inputcnpj}?key=${API_KEY}`;
+
+    try {
+         //Coleta os dados da API do CNPJ
+        const data = await fetchData(url);
+
+        //Informações gerais do CNPJ inserido
+        const infos = `<p>CNPJ Inserido: ${data.cnpj}</p> <p>Nome Público: ${data.nome_fantasia}</p> <p>Razão Social: ${data.razao_social}</p> <p>Situação de Cadastro: ${data.descricao_situacao_cadastral}</p>`;
+
+        //O endereço do Local
+        const enderecos = `<p>Rua: ${data.descricao_tipo_logradouro || ''} ${data.logradouro || ''}, ${data.numero || ''}</p> <p>Bairro: ${data.bairro || ''}</p> <p>CEP: ${data.cep || ''}</p> <p>Cidade: ${data.municipio || ''}</p> <p>Estado:${data.uf || ''}</p>`;
+
+        // Informações do Sócio
+        const infosocio = `<p>Sócio: ${data.qsa[0].nome_socio || ''}</p> <p>CPF do Sócio: ${data.qsa[0].cnpj_cpf_do_socio || ''}</p> <p>Data de sua Entrada na Sociedade: ${data.qsa[0].data_entrada_sociedade || ''}</p>`;
+
+        //Telefone do Local
+        const telefone = `<p>Telefone para Contato: ${data.ddd_telefone_1 || ''}</p>`;
+
+        //Exibe as informações do CNPJ formatadas
+        document.getElementById('resultadocnpj').innerHTML = `${infos}<br>${enderecos}<br>${infosocio}<br>${telefone}`;
+    } catch (error) {
+        //Caso ocorra um erro isso que será exibido
+        document.getElementById('resultadocnpj').innerHTML = '<p>Erro ao consultar o CNPJ inserido!</p>';
+    }
+}
+
+</script>
+    
+</body>
+</html>
